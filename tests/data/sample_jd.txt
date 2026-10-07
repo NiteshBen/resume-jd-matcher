@@ -1,0 +1,35 @@
+Support Engineer (APAC)
+Location: Remote, APAC
+Department: Support
+
+Supabase is the Postgres development platform, built by developers for developers. We provide a
+complete backend solution including Database, Auth, Storage, Edge Functions, Realtime, and Vector
+Search. All services are deeply integrated and designed for growth.
+
+We are seeking Support Engineers to provide world-class developer support for anyone experiencing
+issues or seeking guidance when using Supabase. The support team is globally distributed with a
+strong focus on minimizing time to fix, and works closely with the product engineering and growth
+teams.
+
+You will:
+- Provide initial and timely responses to all support cases for a variety of topics, from billing
+  or pre-sales requests to optimization or implementation questions.
+- Triage support cases including directing users to previous answers, code examples, documentation,
+  or escalating to specific technical or business team members.
+- Monitor multiple feedback channels, e.g. Github Issues & Discussions.
+- Identify where internal tooling might be developed or obtained to improve support efficiency.
+- Reproduce issues, create test cases and improve test coverage, if you have experience with testing.
+
+You are:
+- Experienced in customer support, with 3+ years of experience providing developer support to
+  technical customers.
+- Proficient in SQL (ideally PostgreSQL). You feel comfortable with complex SQL queries. If you have
+  a database administration experience, it's a plus.
+- Excellent communication skills and fluency in English.
+- Skilled in using Linux/Unix operating systems and the command line.
+- Experienced working with GitHub Issues and Discussions.
+- Bonus points if you're familiar with popular JavaScript frameworks like React, Vue, and Svelte
+  and have some experience with Node.js.
+- Having a degree in Computer Science is a plus too.
+
+Timezones & Logistics: It's a full-time position with a required location in APAC time zones.
