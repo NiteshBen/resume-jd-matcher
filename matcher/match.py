@@ -30,6 +30,20 @@ class MatchReport:
     required_missing: list[str] = field(default_factory=list)
     present_skills: list[str] = field(default_factory=list)
     coverage_detail: dict = field(default_factory=dict)
+    cosine_weight: float = 0.4
+    coverage_weight: float = 0.6
+
+    def to_dict(self) -> dict:
+        return {
+            "score": self.score,
+            "cosine_similarity": self.cosine_similarity,
+            "skill_coverage": self.skill_coverage,
+            "cosine_weight": self.cosine_weight,
+            "coverage_weight": self.coverage_weight,
+            "required_missing": self.required_missing,
+            "present_skills": self.present_skills,
+            "coverage_detail": self.coverage_detail,
+        }
 
 
 def _cosine(resume: str, jd: str) -> float:
@@ -76,7 +90,20 @@ def score_match(resume: str, jd: str,
                 cosine_weight: float = 0.4, coverage_weight: float = 0.6) -> MatchReport:
     cosine = _cosine(resume, jd)
     coverage, present, missing, detail = _skill_coverage(resume, jd)
-    blended = 100.0 * (cosine_weight * cosine + coverage_weight * coverage)
+
+    total_weight = cosine_weight + coverage_weight
+    if total_weight <= 0:
+        c_weight, cov_weight = 0.4, 0.6
+    else:
+        c_weight = cosine_weight / total_weight
+        cov_weight = coverage_weight / total_weight
+
+    if not detail:
+        # No recognizable skills mentioned in JD: score purely on TF-IDF cosine similarity
+        blended = 100.0 * cosine
+    else:
+        blended = 100.0 * (c_weight * cosine + cov_weight * coverage)
+
     return MatchReport(
         score=round(blended, 1),
         cosine_similarity=round(cosine, 3),
@@ -84,4 +111,6 @@ def score_match(resume: str, jd: str,
         required_missing=missing,
         present_skills=present,
         coverage_detail=detail,
+        cosine_weight=round(c_weight, 2),
+        coverage_weight=round(cov_weight, 2),
     )

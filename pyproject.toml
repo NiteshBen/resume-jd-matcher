@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resume-jd-matcher"
+version = "0.2.0"
+description = "Score how well a resume answers a job description with TF-IDF cosine similarity and weighted skill coverage"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Nitesh Beniwal", email = "niteshben01@gmail.com" }
+]
+keywords = ["resume", "job-description", "matcher", "ats", "nlp", "tfidf", "career"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "scikit-learn>=1.3.0",
+    "pandas>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+]
+
+[project.scripts]
+resume-jd-matcher = "cli:main"
+
+[project.urls]
+Homepage = "https://github.com/NiteshBen/resume-jd-matcher"
+Repository = "https://github.com/NiteshBen/resume-jd-matcher.git"
+Issues = "https://github.com/NiteshBen/resume-jd-matcher/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["matcher*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

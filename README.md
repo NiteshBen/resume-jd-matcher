@@ -1,7 +1,9 @@
 # resume-jd-matcher
 
+[![CI](https://github.com/NiteshBen/resume-jd-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/NiteshBen/resume-jd-matcher/actions/workflows/ci.yml)
+
 Score **how well a resume actually answers a job description** — before anyone
-wastes an application. Built by [Nitesh Beniwal](https://github.com/NiteshBen01)
+wastes an application. Built by [Nitesh Beniwal](https://github.com/NiteshBen)
 during a real worldwide-remote job hunt, after watching too many postings pass a
 keyword filter while hiding real gaps.
 
@@ -14,20 +16,41 @@ The matcher combines two signals that answer different questions:
 
 Skill coverage is weighted, not binary: core skills (python, sql, LLM/agent
 stack) count more than generic ones, and skills are classified as
-**required vs nice-to-have** by reading the sentence they appear in
-("must have", "3+ years", "proficient in" → required; "bonus points",
+**required vs nice-to-have** both through section-heading awareness
+("Requirements", "Qualifications" vs "Nice to have", "Bonus points") and inline
+sentence context ("must have", "3+ years", "proficient in" → required; "bonus points",
 "familiar with" → nice).
+
+Skill matching uses safe lookaround word boundaries (`(?<!\w)...(?!\w)`),
+accurately handling technical identifiers like `C++` without trailing character
+mismatches or false substring positives.
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
+# or install in editable mode:
+pip install -e .
 
-# score one resume against one JD, print + save a markdown report
-python cli.py match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt --out report.md
+# score one resume against one JD, print markdown report
+resume-jd-matcher match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt
 
-# batch: rank a CSV of postings (columns: title, description[, url])
-python cli.py batch --resume resume.md --jobs postings.csv --out ranked.csv
+# save report to markdown or JSON
+resume-jd-matcher match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt --out report.md
+resume-jd-matcher match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt --out report.json
+
+# machine-readable JSON output to stdout
+resume-jd-matcher match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt --json
+
+# set a minimum passing threshold (exits with code 1 if score < threshold — ideal for CI / automated pipelines)
+resume-jd-matcher match --resume tests/data/sample_resume.md --jd tests/data/sample_jd.txt --min-score 50
+
+# customize scoring weights (e.g. 50% cosine, 50% skill coverage)
+resume-jd-matcher match --resume resume.md --jd jd.txt --cosine-weight 0.5 --coverage-weight 0.5
+
+# batch: rank a CSV of postings (supports columns: title/job_title, description/text, url)
+resume-jd-matcher batch --resume resume.md --jobs postings.csv --out ranked.csv
+resume-jd-matcher batch --resume resume.md --jobs postings.csv --out ranked.json --min-score 40
 ```
 
 ## Sample output (real run)
@@ -36,7 +59,7 @@ python cli.py batch --resume resume.md --jobs postings.csv --out ranked.csv
 (the JD is Supabase's Support Engineer (APAC) posting):
 
 ```
-Score: 37.7/100 (cosine 0.04 x 0.4 + skill coverage 0.60 x 0.6)
+Score: 37.7/100 (cosine 0.04 x 0.40 + skill coverage 0.60 x 0.60)
 
 Present skills: communication, git, sql
 
@@ -67,15 +90,23 @@ list actionable — every missing skill names the next thing to learn or reword.
 words, so `java` never matches `javascript`. Add a row when a JD uses a new
 term; `tests/test_match.py` shows the expected behavior.
 
+## Running tests
+
+```bash
+pytest -v
+```
+
 ## Project layout
 
 ```
 matcher/
-  extract.py    # skill lexicon, word-boundary matching, required/nice classification
-  match.py      # TF-IDF cosine + weighted coverage -> 0-100 score
-  report.py     # markdown report renderer
-cli.py          # match / batch commands
-tests/          # pytest: alias matching, requirement classification, ranking sanity
+  extract.py    # skill lexicon, regex boundaries, section-aware requirement classification
+  match.py      # TF-IDF cosine + weighted coverage -> MatchReport
+  report.py     # markdown & JSON report renderers
+cli.py          # CLI commands: match & batch
+tests/          # pytest test suite
+pyproject.toml  # standard packaging and entry points
+.github/        # GitHub Actions CI workflow
 ```
 
 ## License
